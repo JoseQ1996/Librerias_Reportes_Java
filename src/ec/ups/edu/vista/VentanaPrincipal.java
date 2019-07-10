@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package libreriajava;
+package ec.ups.edu.vista;
 
 import ec.edu.ups.controlador.ControladorPersonadb;
 import ec.edu.ups.modelo.Persona;
@@ -52,12 +52,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Double suma6=0.00;
         Double suma7=0.00;
         Double suma8=0.00;
-    public VentanaPrincipal() throws Exception {
+        double []sumas;
+        int [] contadores;
+        double [] acumulador;
+    public VentanaPrincipal() throws Exception {  
         initComponents();
          String url="jdbc:postgresql://localhost:5432/MiBaseDeDatos";
         String user="postgres";
         String password="Flako031996";
         ControladorPersonadb controlador=new ControladorPersonadb(url, user, password);
+        sumas=new double[38];
+        contadores=new int[38];
+        acumulador=new double[38];
         Set <Persona> listaPersonas=controlador.listaPersonas();
         
         for (Persona persona : listaPersonas) {
@@ -116,6 +122,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
                cont++;   
         }
+        /*
         System.out.println("Entre 16-20: "+cont1);
         System.out.println("Entre 21-30: "+cont2);
         System.out.println("Entre 31-40: "+cont3);
@@ -130,8 +137,28 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         System.out.println("Promedio Mujeres 31-40 Salario: "+(suma6/conp6));
         System.out.println("Promedio Hombres mayores 40 Salario: "+(suma7/conp7));
         System.out.println("Promedio Mujeres mayores 40 Salario: "+(suma8/conp8));
+        */
+        int i=0;
+        for (int ed=16;ed<=53;ed++){
+            
+        for (Persona persona : listaPersonas) {       
+            if(persona.getEdad()==ed){
+                sumas[i]=sumas[i]+persona.getSalario();
+                contadores[i]++;
+            }                    
+        }
+        if(contadores[i]==0){
+           acumulador[i]=0; 
+        }
+        else{
+        acumulador[i]=sumas[i]/contadores[i];
+        }
+            //System.out.println("Edad "+ ed +" promedio "+acumulador[i]+" con un total de :" +sumas[i]+" y de personas " +contadores[i]);
+            i++;
+        }       
         grafico1();
         grafico2();
+        grafico3();
         
     }
     public void grafico1(){
@@ -182,6 +209,29 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel2.add(chartPanel,BorderLayout.CENTER);
         jPanel2.validate();
     }
+    
+    public void grafico3(){
+        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+        
+        int ed=16;
+       for (int i = 0; i <sumas.length; i++) {
+                 String edad=String.valueOf(ed);     
+                 line_chart_dataset.addValue(acumulador[i], "salario", edad);
+                 ed++;
+            }
+ 
+   
+        // Creando el Grafico
+        JFreeChart chart=ChartFactory.createLineChart("Promedio por Edad",
+                "Edades","Salario",line_chart_dataset,PlotOrientation.VERTICAL,
+                true,true,false);  
+        
+        // Mostrar Grafico
+        ChartPanel chartPanel1 = new ChartPanel(chart);
+        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanel3.add(chartPanel1,BorderLayout.CENTER);
+        jPanel3.validate();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -227,11 +277,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addGap(0, 612, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 315, Short.MAX_VALUE)
+            .addGap(0, 490, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -259,7 +309,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(308, Short.MAX_VALUE))
+                .addContainerGap(133, Short.MAX_VALUE))
         );
 
         pack();
