@@ -4,17 +4,23 @@
  * and open the template in the editor.
  */
 
-package ec.ups.edu.vista;
+package ec.edu.ups.vista;
 
 import ec.edu.ups.controlador.ControladorPersonadb;
 import ec.edu.ups.modelo.Persona;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -55,16 +61,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         double []sumas;
         int [] contadores;
         double [] acumulador;
-    public VentanaPrincipal() throws Exception {  
-        initComponents();
          String url="jdbc:postgresql://localhost:5432/MiBaseDeDatos";
         String user="postgres";
         String password="Flako031996";
+        Set <Persona> listaPersonas;
+    public VentanaPrincipal() throws Exception {  
+        initComponents();
+        
         ControladorPersonadb controlador=new ControladorPersonadb(url, user, password);
+   
         sumas=new double[38];
         contadores=new int[38];
         acumulador=new double[38];
-        Set <Persona> listaPersonas=controlador.listaPersonas();
+        listaPersonas=controlador.listaPersonas();
         
         for (Persona persona : listaPersonas) {
             if(persona.getEdad()>=16 && persona.getEdad()<=20){
@@ -232,7 +241,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel3.add(chartPanel1,BorderLayout.CENTER);
         jPanel3.validate();
     }
+    public void generaPDF() throws Exception{
+        
+        Class.forName("org.postgresql.Driver");
+        Connection conexion = DriverManager.getConnection(url, user, password);
+        
+        
+        JasperReport reporte = (JasperReport) JRLoader.loadObject("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\personas.jasper");
+       /*
+        Map<String, String> parametros = new HashMap<String, String>();
+        parametros.put("autor", "Jose");
+        parametros.put("titulo", "Listado Personas");
+        */
+        JasperPrint jasperPrint = JasperFillManager.fillReport(reporte, null,conexion);
 
+        JRExporter exporter = new JRPdfExporter();
+        
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+        exporter.setParameter(JRExporterParameter.OUTPUT_FILE, new java.io.File("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\reportePersonas.pdf"));
+        exporter.exportReport();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -245,6 +273,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Graficos De Estadisticas");
@@ -284,6 +313,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGap(0, 490, Short.MAX_VALUE)
         );
 
+        jButton1.setText("Generar Reporte");
+        jButton1.setActionCommand("");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -296,7 +333,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addGap(48, 48, 48)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(285, 285, 285)
+                        .addGap(40, 40, 40)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(68, 68, 68)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(438, Short.MAX_VALUE))
         );
@@ -307,13 +346,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(133, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+   try{
+        generaPDF();
+   }catch(Exception ex){
+       ex.printStackTrace();
+   }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,6 +399,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             public void run() {
                 try {
                     new VentanaPrincipal().setVisible(true);
+                    
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -355,6 +408,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
