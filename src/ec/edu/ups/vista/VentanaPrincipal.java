@@ -6,20 +6,46 @@
 
 package ec.edu.ups.vista;
 
+import ec.edu.ups.controlador.BaseDeDatos;
+import ec.edu.ups.controlador.ControladorDirecciondb;
 import ec.edu.ups.controlador.ControladorPersonadb;
+import ec.edu.ups.modelo.Direccion;
 import ec.edu.ups.modelo.Persona;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.List;
+import java.awt.PopupMenu;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -165,9 +191,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             //System.out.println("Edad "+ ed +" promedio "+acumulador[i]+" con un total de :" +sumas[i]+" y de personas " +contadores[i]);
             i++;
         }       
-        grafico1();
-        grafico2();
-        grafico3();
+       
         
     }
     public void grafico1(){
@@ -243,23 +267,37 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
     public void generaPDF() throws Exception{
         
-        Class.forName("org.postgresql.Driver");
-        Connection conexion = DriverManager.getConnection(url, user, password);
+        BaseDeDatos db=new BaseDeDatos(url, user, password);
+        File reporteArchivo=new File("src/ec/edu/ups/reportes/personas.jasper");
+        JasperReport reporte = (JasperReport) JRLoader.loadObject(reporteArchivo);
+        db.conectar();
+        JasperPrint jasperPrint = JasperFillManager.fillReport(reporte, null,db.getConexionDb());
+        JasperExportManager.exportReportToHtmlFile(jasperPrint, "C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\reportePersonas.pdf");
+        JasperViewer.viewReport(jasperPrint);
+        db.desconectar();
+    }
+    public void generarDirecciones(String Nombre,String DIR_CEDULA_PER,String edad,String fecha,String celular,String salario,String genero) throws JRException, FileNotFoundException, IOException{
         
-        
-        JasperReport reporte = (JasperReport) JRLoader.loadObject("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\personas.jasper");
-       /*
-        Map<String, String> parametros = new HashMap<String, String>();
-        parametros.put("autor", "Jose");
-        parametros.put("titulo", "Listado Personas");
-        */
-        JasperPrint jasperPrint = JasperFillManager.fillReport(reporte, null,conexion);
+         BaseDeDatos db=new BaseDeDatos(url, user, password);
+        Map  parametros = new HashMap();
+        System.out.println(Nombre);
+        System.out.println(DIR_CEDULA_PER);
+        parametros.put("nombre", Nombre);
+        parametros.put("cedula", DIR_CEDULA_PER);
+        parametros.put("fecha", fecha);
+        parametros.put("celular", celular);
+        parametros.put("edad", edad);
+        parametros.put("genero", genero);
+        parametros.put("salario", salario);
+         File reporteArchivo=new File("src/ec/edu/ups/reportes/direcciones.jasper");
+        JasperReport reporte= (JasperReport) JRLoader.loadObject(reporteArchivo);
+        db.conectar();
+        JasperPrint jasperPrint = JasperFillManager.fillReport(reporte, parametros,db.getConexionDb());
+        JasperExportManager.exportReportToHtmlFile(jasperPrint, "C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\reporteDirecciones.pdf");
+        JasperViewer.viewReport(jasperPrint);
+        db.desconectar();
 
-        JRExporter exporter = new JRPdfExporter();
-        
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRExporterParameter.OUTPUT_FILE, new java.io.File("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\LibreriaJava\\src\\ec\\edu\\ups\\reportes\\reportePersonas.pdf"));
-        exporter.exportReport();
+
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -273,99 +311,165 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnGraficas = new javax.swing.JButton();
+        btnDirecciones = new javax.swing.JButton();
+        btnReporte = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Graficos De Estadisticas");
         setBackground(new java.awt.Color(255, 255, 255));
         setForeground(new java.awt.Color(255, 255, 255));
+        setMinimumSize(new java.awt.Dimension(1286, 785));
+        getContentPane().setLayout(null);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 469, Short.MAX_VALUE)
+            .addGap(0, 540, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        getContentPane().add(jPanel1);
+        jPanel1.setBounds(31, 30, 540, 335);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 479, Short.MAX_VALUE)
+            .addGap(0, 612, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 335, Short.MAX_VALUE)
         );
 
+        getContentPane().add(jPanel2);
+        jPanel2.setBounds(624, 30, 612, 335);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 612, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
+            .addGap(0, 343, Short.MAX_VALUE)
         );
 
-        jButton1.setText("Generar Reporte");
-        jButton1.setActionCommand("");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        getContentPane().add(jPanel3);
+        jPanel3.setBounds(624, 383, 612, 343);
+
+        btnGraficas.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnGraficas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/Chart_icon-icons.com_51184.png"))); // NOI18N
+        btnGraficas.setText("Generar Graficas");
+        btnGraficas.setActionCommand("");
+        btnGraficas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnGraficasActionPerformed(evt);
             }
         });
+        getContentPane().add(btnGraficas);
+        btnGraficas.setBounds(157, 398, 293, 57);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(48, 48, 48)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(68, 68, 68)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(438, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(133, Short.MAX_VALUE))
-        );
+        btnDirecciones.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnDirecciones.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/file_pdf_download_icon-icons.com_68954.png"))); // NOI18N
+        btnDirecciones.setText("Generar Reporte De Direcciones");
+        btnDirecciones.setActionCommand("");
+        btnDirecciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDireccionesActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnDirecciones);
+        btnDirecciones.setBounds(157, 536, 293, 57);
+
+        btnReporte.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnReporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/file_pdf_download_icon-icons.com_68954.png"))); // NOI18N
+        btnReporte.setText("Generar Reporte");
+        btnReporte.setActionCommand("");
+        btnReporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReporteActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnReporte);
+        btnReporte.setBounds(157, 468, 293, 55);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/fondo5.jpg"))); // NOI18N
+        jLabel1.setText("jLabel1");
+        jLabel1.setMaximumSize(new java.awt.Dimension(1645, 1220));
+        jLabel1.setMinimumSize(new java.awt.Dimension(1645, 1220));
+        jLabel1.setPreferredSize(new java.awt.Dimension(1645, 1220));
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(0, 0, 1290, 790);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-   try{
+    private void btnGraficasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGraficasActionPerformed
+        grafico1();
+        grafico2();
+        grafico3();
+    }//GEN-LAST:event_btnGraficasActionPerformed
+
+    private void btnDireccionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDireccionesActionPerformed
+        // TODO add your handling code here:
+        String Cedula=JOptionPane.showInputDialog("Ingrese el numero de cedula de la persona");
+        ControladorPersonadb controladorPersonadb=new ControladorPersonadb(url, user, password);
+        String nombre=null;
+        String edad=null;
+        String fecha=null;
+        String celular=null;
+        String salario=null;
+        String genero=null;
+        try{
+        Persona p=controladorPersonadb.search(Cedula);
+        nombre=p.getNombres()+" "+p.getApellidos();
+        edad=String.valueOf(p.getEdad());
+        Format formatter = new SimpleDateFormat("dd/MM/yyyy");
+        fecha=formatter.format(p.getFechaNacimiento());
+        celular=p.getNumeroTelefono();
+        salario=String.valueOf(p.getSalario());
+        genero=p.getGenero();
+        
+        
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        /*
+        ControladorDirecciondb controladorDirecciondb=new ControladorDirecciondb(url, user, password);
+        Set<Direccion>direcciones=controladorDirecciondb.listaDirecciones();
+        Set<Direccion> listaDirecciones=new HashSet<Direccion>();
+        for (Direccion direccion : direcciones) {
+            if(Cedula.equals(direccion.getCedula_per())){
+                listaDirecciones.add(direccion);
+            }
+        }  
+        */
+        try{
+        generarDirecciones(nombre,Cedula,edad,fecha,celular,salario,genero);
+        }catch(Exception ex2){
+                ex2.printStackTrace();
+                }
+        
+       
+
+        
+    }//GEN-LAST:event_btnDireccionesActionPerformed
+
+    private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
+      try{
         generaPDF();
    }catch(Exception ex){
        ex.printStackTrace();
    }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnReporteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -408,7 +512,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnDirecciones;
+    private javax.swing.JButton btnGraficas;
+    private javax.swing.JButton btnReporte;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

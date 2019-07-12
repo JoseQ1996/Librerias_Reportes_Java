@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0dd57b4c-d1b6-424f-8da5-0154e7026d38">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="cedula" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nombre" class="java.lang.String"/>
+	<parameter name="edad" class="java.lang.String"/>
+	<parameter name="fecha" class="java.lang.String"/>
+	<parameter name="salario" class="java.lang.String"/>
+	<parameter name="genero" class="java.lang.String"/>
+	<parameter name="celular" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     DIRECCION."DIR_CODIGO" AS DIRECCION_DIR_CODIGO,
+     DIRECCION."DIR_CALLE_PRINCIPAL" AS DIRECCION_DIR_CALLE_PRINCIPAL,
+     DIRECCION."DIR_CALLE_SECUNDARIA" AS DIRECCION_DIR_CALLE_SECUNDARIA,
+     DIRECCION."DIR_NUMERO" AS DIRECCION_DIR_NUMERO,
+     DIRECCION."DIR_CEDULA_PER" AS DIRECCION_DIR_CEDULA_PER
+FROM
+     "DIRECCION" DIRECCION
+WHERE
+     "DIR_CEDULA_PER" = $P{cedula};]]>
+	</queryString>
+	<field name="direccion_dir_codigo" class="java.math.BigDecimal"/>
+	<field name="direccion_dir_calle_principal" class="java.lang.String"/>
+	<field name="direccion_dir_calle_secundaria" class="java.lang.String"/>
+	<field name="direccion_dir_numero" class="java.math.BigDecimal"/>
+	<field name="direccion_dir_cedula_per" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="120" y="13" width="367" height="49" uuid="d5ba4c32-b99d-4543-a5a7-3bda3ec12ad6"/>
+				<textElement>
+					<font fontName="Microsoft JhengHei UI" size="32" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LISTA DIRECCIONES]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="146" splitType="Stretch">
+			<textField>
+				<reportElement x="184" y="1" width="148" height="20" uuid="c2bc4163-6368-49d6-995e-265894263361"/>
+				<textFieldExpression><![CDATA[$P{cedula}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="21" width="299" height="20" uuid="751de3ec-4f1b-48c5-993e-6c874ff0a599"/>
+				<textFieldExpression><![CDATA[$P{nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="41" width="299" height="20" uuid="023ae32e-dc03-4ecd-b92c-ec0b80060141"/>
+				<textFieldExpression><![CDATA[$P{edad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="61" width="299" height="20" uuid="e82fe9f4-0729-4b9d-a3e8-325f676972c3"/>
+				<textFieldExpression><![CDATA[$P{fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="101" width="299" height="20" uuid="85915f97-405e-41cd-a49a-5354902f20f1"/>
+				<textFieldExpression><![CDATA[$P{salario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="81" width="299" height="20" uuid="10cb3633-125d-42ca-9674-323e9f750d69"/>
+				<textFieldExpression><![CDATA[$P{celular}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="121" width="299" height="20" uuid="74938fad-7a68-4c88-a7c3-539868f98edf"/>
+				<textFieldExpression><![CDATA[$P{genero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="1" width="164" height="20" uuid="8f925fee-4490-4e1d-b2f1-6217097ba022"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CEDULA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="21" width="164" height="20" uuid="74c87e5f-a34b-4a03-a3be-71c894ee4853"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRES Y APELLIDOS:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="41" width="164" height="20" uuid="8cdfc9df-b0d6-4ff0-a14b-5f075b119699"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EDAD:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="61" width="164" height="20" uuid="c9baa36d-e17f-4f0b-a702-ac907ba329ac"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA DE NACIMIENTO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="81" width="164" height="20" uuid="405f7f86-52b5-4208-b49f-79acffbde896"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CELULAR:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="101" width="164" height="20" uuid="e9a0eb2d-ba03-427e-b25d-91df1ad82513"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALARIO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="121" width="164" height="20" uuid="6f121a44-b293-461c-8d43-e9b8bd3f12e2"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GENERO:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29" splitType="Stretch">
+			<staticText>
+				<reportElement x="20" y="9" width="100" height="20" uuid="b124a8bd-f190-4d72-aed4-8d11699f727e"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CODIGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="9" width="158" height="20" uuid="10a34146-9dbf-4316-8077-9b35b0a2a3a5"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CALLE PRINCIPAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="276" y="9" width="158" height="20" uuid="6a8ac000-df17-4781-8cab-ddd9a2fb9f5e"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CALLE SECUNDARIA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="434" y="9" width="100" height="20" uuid="084c7d34-9d25-46d8-b661-b7513ac89ef3"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NUMERO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="20" y="3" width="100" height="20" uuid="401d31e5-c401-444e-9399-2b4f71249301"/>
+				<textFieldExpression><![CDATA[$F{direccion_dir_codigo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="3" width="158" height="20" uuid="f1db5330-69a1-4949-88f2-bcb9ea326867"/>
+				<textFieldExpression><![CDATA[$F{direccion_dir_calle_principal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="278" y="3" width="156" height="20" uuid="fc1a75a3-088b-4764-a50d-21aae4cf324b"/>
+				<textFieldExpression><![CDATA[$F{direccion_dir_calle_secundaria}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="434" y="3" width="100" height="20" uuid="0fa136d6-21ec-4f73-b68b-88970d669e17"/>
+				<textFieldExpression><![CDATA[$F{direccion_dir_numero}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="29" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="52" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

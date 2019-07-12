@@ -23,14 +23,10 @@
 	</background>
 	<title>
 		<band height="70" splitType="Stretch">
-			<image>
-				<reportElement x="-20" y="0" width="595" height="64" uuid="3e5c465d-1c97-4518-8ca2-de64f2bf6035"/>
-				<imageExpression><![CDATA["wood.jpg"]]></imageExpression>
-			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="5" width="263" height="33" uuid="5560fa58-d515-4ac9-b70b-98450170db7a"/>
+				<reportElement style="Title" x="138" y="0" width="263" height="33" forecolor="#000000" uuid="5560fa58-d515-4ac9-b70b-98450170db7a"/>
 				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Wood Title]]></text>
+				<text><![CDATA[Listas Personas]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="SubTitle" x="63" y="39" width="200" height="22" forecolor="#FFFFFF" uuid="a789eddb-856b-49a6-96b1-0b8751bbbc27"/>
@@ -93,7 +89,7 @@
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Detail" x="0" y="0" width="69" height="15" uuid="f0d2e482-cbfd-499f-a973-5392b59b437f"/>
+				<reportElement style="Detail" x="0" y="1" width="69" height="15" uuid="f0d2e482-cbfd-499f-a973-5392b59b437f"/>
 				<textFieldExpression><![CDATA[$F{PER_CEDULA}]]></textFieldExpression>
 			</textField>
 			<textField>
