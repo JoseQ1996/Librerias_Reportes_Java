@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +77,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         int conp6=0;
         int conp7=0;
         int conp8=0;
+        int contm=0;
+        int contf=0;
         Double suma1=0.00;
         Double suma2=0.00;
         Double suma3=0.00;
@@ -84,6 +87,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Double suma6=0.00;
         Double suma7=0.00;
         Double suma8=0.00;
+        double total1=0;
+        double total2=0;
+        double total3=0,total4=0;
         double []sumas;
         int [] contadores;
         double [] acumulador;
@@ -91,16 +97,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         String user="postgres";
         String password="Flako031996";
         Set <Persona> listaPersonas;
+        DecimalFormat df ;
     public VentanaPrincipal() throws Exception {  
         initComponents();
         
         ControladorPersonadb controlador=new ControladorPersonadb(url, user, password);
-   
+        df= new DecimalFormat("#.00");
         sumas=new double[38];
         contadores=new int[38];
         acumulador=new double[38];
         listaPersonas=controlador.listaPersonas();
-        
+         for (Persona persona : listaPersonas) {
+              if(persona.getGenero().equals("Masculino")){
+                    contm++;
+                    
+                }
+                 if(persona.getGenero().equals("Femenino")){
+                    contf++;
+                    
+                }
+         }
         for (Persona persona : listaPersonas) {
             if(persona.getEdad()>=16 && persona.getEdad()<=20){
                // System.out.println(persona.toString());
@@ -157,6 +173,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
                cont++;   
         }
+        total1=(suma1+suma2)/(conp1+conp2);
+        total2=(suma3+suma4)/(conp3+conp4);
+        total3=(suma5+suma6)/(conp5+conp6);
+        total4=(suma7+suma8)/(conp7+conp8);
         /*
         System.out.println("Entre 16-20: "+cont1);
         System.out.println("Entre 21-30: "+cont2);
@@ -194,12 +214,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
        
         
     }
+    /**
+     * Generar el grafico del promedio de edad en forma de pastel
+     */
     public void grafico1(){
       DefaultPieDataset data = new DefaultPieDataset();
-        data.setValue("Entre 16-20", cont1);
-        data.setValue("Entre 21-30", cont2);
-        data.setValue("Entre 31-40", cont3);
-        data.setValue("Mayores a 40", cont4);
+        data.setValue("Entre 16-20: "+cont1, cont1);
+        data.setValue("Entre 21-30: "+cont2, cont2);
+        data.setValue("Entre 31-40: "+cont3, cont3);
+        data.setValue("Mayores a 40: "+cont4, cont4);
         
         
         // Creando el Grafico
@@ -217,8 +240,36 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel1.validate();
         
 }
+    /**
+     * Generar el grafico del promedio de genero en forma de pastel
+     */
+      public void grafico4(){
+      DefaultPieDataset data = new DefaultPieDataset();
+        data.setValue("Masculino: "+contm, contm);
+        data.setValue("Femenino: "+contf , contf);
+        
+        
+        // Creando el Grafico
+        JFreeChart chart = ChartFactory.createPieChart(
+         "Promedio por Genero", 
+         data, 
+         true, 
+         true, 
+         false);
+ 
+        // Mostrar Grafico
+        ChartPanel frame = new ChartPanel(chart);
+        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.add(frame,BorderLayout.CENTER);
+        jPanel1.validate();
+        
+}
+      /**
+       * Genera el grafico de salario por edad y genero en forma de barras
+       */
     public void grafico2(){
          // Fuente de Datos
+        
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         dataset.setValue((suma2/conp2), "Mujeres", "16-20");
         dataset.setValue((suma1/conp1), "Hombres", "16-20");
@@ -242,7 +293,35 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel2.add(chartPanel,BorderLayout.CENTER);
         jPanel2.validate();
     }
-    
+    /**
+     * Generar el grafico del promedio del salario por edad en forma de pastel
+     */
+     public void grafico5(){
+      DefaultPieDataset data = new DefaultPieDataset();
+        data.setValue("Entre 16-20: "+df.format(total1), total1);
+        data.setValue("Entre 21-30: "+df.format(total2), total2);
+        data.setValue("Entre 31-40: "+df.format(total3), total3);
+        data.setValue("Mayores a 40 "+df.format(total4), total4);
+        
+        
+        // Creando el Grafico
+        JFreeChart chart = ChartFactory.createPieChart(
+         "Promedio de Salario por Edades", 
+         data, 
+         true, 
+         true, 
+         false);
+ 
+        // Mostrar Grafico
+        ChartPanel frame = new ChartPanel(chart);
+        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.add(frame,BorderLayout.CENTER);
+        jPanel1.validate();
+        
+}
+     /**
+      * Genera el grafico del promedio de salario por edad en forma lineal
+      */
     public void grafico3(){
         DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
         
@@ -265,6 +344,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel3.add(chartPanel1,BorderLayout.CENTER);
         jPanel3.validate();
     }
+    /**
+     * Genera el pdf de las personas de la base de datos
+     * @throws Exception 
+     */
     public void generaPDF() throws Exception{
         
         BaseDeDatos db=new BaseDeDatos(url, user, password);
@@ -276,14 +359,27 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         JasperViewer.viewReport(jasperPrint);
         db.desconectar();
     }
-    public void generarDirecciones(String Nombre,String DIR_CEDULA_PER,String edad,String fecha,String celular,String salario,String genero) throws JRException, FileNotFoundException, IOException{
+    /**
+     * Genera el pdf de las direcciones dependiendo la cedula de la persona
+     * @param nombre
+     * @param cedula
+     * @param edad
+     * @param fecha
+     * @param celular
+     * @param salario
+     * @param genero
+     * @throws JRException
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public void generarDirecciones(String nombre,String cedula,String edad,String fecha,String celular,String salario,String genero) throws JRException, FileNotFoundException, IOException{
         
          BaseDeDatos db=new BaseDeDatos(url, user, password);
         Map  parametros = new HashMap();
-        System.out.println(Nombre);
-        System.out.println(DIR_CEDULA_PER);
-        parametros.put("nombre", Nombre);
-        parametros.put("cedula", DIR_CEDULA_PER);
+        //System.out.println(nombre);
+        //System.out.println(cedula);
+        parametros.put("nombre", nombre);
+        parametros.put("cedula", cedula);
         parametros.put("fecha", fecha);
         parametros.put("celular", celular);
         parametros.put("edad", edad);
@@ -300,6 +396,25 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     }
     /**
+     * Metodo que funciona para el comboBox seleccionar un diferente pastel
+     * @param valor 
+     */
+    public void seleccionGrafico(String valor){
+        if(valor.equals("Edad")){
+           jPanel1.removeAll();
+           grafico1() ;
+            
+        }
+        if(valor.equals("Genero")){
+           jPanel1.removeAll();
+           grafico4() ;          
+        }
+        if(valor.equals("Salario")){
+           jPanel1.removeAll();
+           grafico5() ;          
+        }
+    }
+    /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -314,6 +429,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnGraficas = new javax.swing.JButton();
         btnDirecciones = new javax.swing.JButton();
         btnReporte = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -375,7 +491,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnGraficas);
-        btnGraficas.setBounds(157, 398, 293, 57);
+        btnGraficas.setBounds(160, 450, 293, 57);
 
         btnDirecciones.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         btnDirecciones.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/file_pdf_download_icon-icons.com_68954.png"))); // NOI18N
@@ -387,7 +503,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnDirecciones);
-        btnDirecciones.setBounds(157, 536, 293, 57);
+        btnDirecciones.setBounds(160, 590, 293, 57);
 
         btnReporte.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         btnReporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/file_pdf_download_icon-icons.com_68954.png"))); // NOI18N
@@ -399,7 +515,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnReporte);
-        btnReporte.setBounds(157, 468, 293, 55);
+        btnReporte.setBounds(160, 520, 293, 55);
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Edad", "Genero", "Salario" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jComboBox1);
+        jComboBox1.setBounds(160, 400, 290, 22);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/edu/ups/imagenes/fondo5.jpg"))); // NOI18N
         jLabel1.setText("jLabel1");
@@ -413,7 +538,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGraficasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGraficasActionPerformed
-        grafico1();
+        String valor=jComboBox1.getSelectedItem().toString();
+        seleccionGrafico(valor);
         grafico2();
         grafico3();
     }//GEN-LAST:event_btnGraficasActionPerformed
@@ -442,16 +568,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        /*
-        ControladorDirecciondb controladorDirecciondb=new ControladorDirecciondb(url, user, password);
-        Set<Direccion>direcciones=controladorDirecciondb.listaDirecciones();
-        Set<Direccion> listaDirecciones=new HashSet<Direccion>();
-        for (Direccion direccion : direcciones) {
-            if(Cedula.equals(direccion.getCedula_per())){
-                listaDirecciones.add(direccion);
-            }
-        }  
-        */
         try{
         generarDirecciones(nombre,Cedula,edad,fecha,celular,salario,genero);
         }catch(Exception ex2){
@@ -470,6 +586,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
        ex.printStackTrace();
    }
     }//GEN-LAST:event_btnReporteActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+        String valor=jComboBox1.getSelectedItem().toString();
+        seleccionGrafico(valor);
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -515,6 +637,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnDirecciones;
     private javax.swing.JButton btnGraficas;
     private javax.swing.JButton btnReporte;
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

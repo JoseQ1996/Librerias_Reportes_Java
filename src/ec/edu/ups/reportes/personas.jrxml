@@ -24,14 +24,11 @@
 	<title>
 		<band height="70" splitType="Stretch">
 			<staticText>
-				<reportElement style="Title" x="138" y="0" width="263" height="33" forecolor="#000000" uuid="5560fa58-d515-4ac9-b70b-98450170db7a"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Listas Personas]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="SubTitle" x="63" y="39" width="200" height="22" forecolor="#FFFFFF" uuid="a789eddb-856b-49a6-96b1-0b8751bbbc27"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Wood SubTitle]]></text>
+				<reportElement style="Title" x="158" y="10" width="295" height="49" forecolor="#000000" uuid="5560fa58-d515-4ac9-b70b-98450170db7a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="30"/>
+				</textElement>
+				<text><![CDATA[Lista Personas]]></text>
 			</staticText>
 		</band>
 	</title>
