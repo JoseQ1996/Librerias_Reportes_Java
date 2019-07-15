@@ -139,7 +139,7 @@ También se puede decir que el realizar reportes es de mucha utilidad ya que as�
 ## RECOMENDACIONES:
 Implementar librerías, base de datos, graficas de estadísticas y generación de reportes
 
-**Nombre de estudiante:** José Quinde-Franklin Orellana
+**Nombre de estudiante:** José Quinde
 
 
 **Firma de estudiante:**
